@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_bootstrap import Bootstrap
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -26,6 +26,8 @@ class Person(db.Model):
     post = db.Column(db.Integer, nullable=False)
     online = db.Column(db.Boolean, nullable=False)
     intro = db.Column(db.String(250), nullable=False)
+    gmail = db.Column(db.String(250), nullable=False)
+    birth = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
         return f'<Person {self.id}>'
@@ -97,7 +99,7 @@ def SomeFunction():
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
     elif num == "2":
-        today = datetime.today()
+        today = datetime.today() + timedelta(hours=8)
         person = Person.query.get(the_id)
         new_blog = Blog(
             name=person.name,
@@ -114,7 +116,11 @@ def SomeFunction():
         db.session.delete(blog)
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
-
+    elif num == "4":
+        update_person = Person.query.get(the_id)
+        update_person.intro = request.form['user-post']
+        db.session.commit()
+        return redirect(url_for("user_logged_in", the_id=the_id))
 
 @app.route('/')
 def user_welcome():
@@ -147,11 +153,14 @@ def user_logged_in():
 @app.route('/profile/')
 def user_profile():
     the_id = request.args.get('the_id')
-    person = Person.query.get(the_id)
+    person_id = request.args.get('person_id')
+    person = Person.query.get(person_id)
     return render_template(
         "profile.html",
         person=person,
         rn=random_number,
+        the_id=the_id,
+        int=int
     )
 
 
@@ -167,6 +176,7 @@ def user_login():
         else:
             if real_password == "waiting":
                 Person.query.get(the_id).password = the_password
+                db.session.commit()
                 return redirect(url_for("user_logged_in", the_id=the_id))
             else:
                 if real_password == the_password:
@@ -174,6 +184,13 @@ def user_login():
                 else:
                     return render_template("login.html", state="wrong")
     return render_template("login.html", state="new")
+
+
+@app.route('/set-intro')
+def set_intro():
+    the_id = request.args.get('the_id')
+    person = Person.query.get(the_id)
+    return render_template("set.html", person=person)
 
 
 # movies

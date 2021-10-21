@@ -46,17 +46,12 @@
             <hr>
             <div class="settings-links">
                 <img alt="img" src="../static/image/feedback.png" class="settings-icon">
-                <a href="#">Give Feedback</a>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-feedback&body=BODY&&tf=cm">Give Feedback</a>
             </div>
             <hr>
-
-            <div class="settings-links">
-                <img alt="img" src="../static/image/setting.png" class="settings-icon">
-                <a href="#">Settings & Privacy</a>
-            </div>
             <div class="settings-links">
                 <img alt="img" src="../static/image/help.png" class="settings-icon">
-                <a href="#">Help & Support</a>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-HELP&body=BODY&&tf=cm">Help & Support</a>
             </div>
             <div class="settings-links">
                 <img alt="img" src="../static/image/logout.png" class="settings-icon">
@@ -182,15 +177,13 @@
         </div>
 
 
-        <img alt="img" src="../static/image/advertisement.png" class="sidebar-ads">
-
         <div class="sidebar-title">
             <h4>Profile</h4>
         </div>
 
         {% for person in pd: %}
         <div class="online-list">
-            <a href="{{ url_for('user_profile', the_id=person.id) }}">
+            <a href="{{ url_for('user_profile', person_id=person.id, the_id=tui) }}">
                 <div class="online">
                     <img alt="img" src="../static/image/member-{{rn(1, 4)}}.png" class="kind-show-{{person.kind}}">
                 </div>

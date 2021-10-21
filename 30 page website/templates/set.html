@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>S2S2 {{person.id}}💕</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+        <div class="write-post-container">
+            <div class="post-input-container">
+                <form method="post" action="{{url_for('SomeFunction', num=4, the_id=person.id)}}">
+                    <label>
+                        <textarea rows="5" placeholder="{{person.intro}}" name="user-post"></textarea>
+                    </label>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-outline-primary" type="submit">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</body>
+</html>

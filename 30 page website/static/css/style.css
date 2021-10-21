@@ -266,10 +266,10 @@ nav {
 .story p {
     position: absolute;
     width: 100%;
-    bottom: 10px;
+    bottom: 25px;
     text-align: center;
     color: #fff;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .story1 {
