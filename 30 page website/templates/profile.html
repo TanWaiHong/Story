@@ -14,7 +14,7 @@
             <img src="{{person.img}}" alt="">
         </div>
         <div class="name">{{ person.name }}</div>
-        <div class="desc">Student {{ person.id }}</div>
+        <div class="desc">{{ person.birth }}</div>
         <div class="sm">
             {% if the_id == 'none':%}
             {% for text in person.intro.split("\n"): %}
