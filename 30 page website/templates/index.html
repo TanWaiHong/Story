@@ -40,7 +40,7 @@
                 <img alt="img" src="../static/image/profile-pic.png">
                 <div>
                     <p>John Nicholson</p>
-                    <a href="#">See Your Profile</a>
+                    <a href="{{ url_for('user_profile', person_id=tui, the_id=tui) }}">See Your Profile</a>
                 </div>
             </div>
             <hr>
@@ -185,7 +185,7 @@
         <div class="online-list">
             <a href="{{ url_for('user_profile', person_id=person.id, the_id=tui) }}">
                 <div class="online">
-                    <img alt="img" src="../static/image/member-{{rn(1, 4)}}.png" class="kind-show-{{person.kind}}">
+                    <img alt="img" src="{{person.img}}" class="kind-show-{{person.kind}}">
                 </div>
                 <p>{{person.name}}</p>
             </a>

@@ -56,6 +56,7 @@ nav {
 
 .nav-user-icon img {
     width: 40px;
+    height: 40px;
     border-radius: 50%;
     cursor: pointer;
 }
@@ -232,8 +233,9 @@ nav {
     width: fit-content;
 }
 
-.online-list .online img {
+.online-list img {
     width: 40px;
+    height: 40px;
     border-radius: 50%;
 }
 
@@ -307,6 +309,7 @@ nav {
 
 .user-profile img {
     width: 45px;
+    height: 45px;
     border-radius: 50%;
     margin-right: 10px;
 }

@@ -28,6 +28,7 @@ class Person(db.Model):
     intro = db.Column(db.String(250), nullable=False)
     gmail = db.Column(db.String(250), nullable=False)
     birth = db.Column(db.String(250), nullable=False)
+    img = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
         return f'<Person {self.id}>'
@@ -121,6 +122,7 @@ def SomeFunction():
         update_person.intro = request.form['user-post']
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
+
 
 @app.route('/')
 def user_welcome():
@@ -276,4 +278,3 @@ def find_movie():
 
 if __name__ == "__main__":
     app.run(debug=True)
-

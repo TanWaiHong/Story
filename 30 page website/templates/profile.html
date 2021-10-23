@@ -11,19 +11,25 @@
 <div class="profile-card">
     <div class="card-header">
         <div class="pic">
-            <img src="../static/image/member-{{rn(1, 4)}}.png" alt="">
+            <img src="{{person.img}}" alt="">
         </div>
         <div class="name">{{ person.name }}</div>
         <div class="desc">Student {{ person.id }}</div>
         <div class="sm">
             {% if the_id == 'none':%}
-            {{person.intro}}
+            {% for text in person.intro.split("\n"): %}
+            {{text}}<br>
+            {% endfor %}
             {% elif int(the_id) == person.id: %}
             <a href="{{url_for('set_intro', the_id=the_id)}}">
-                {{person.intro}}
+                {% for text in person.intro.split("\n"): %}
+                {{text}}<br>
+                {% endfor %}
             </a>
             {% elif the_id != person.id: %}
-            {{person.intro}}
+            {% for text in person.intro.split("\n"): %}
+            {{text}}<br>
+            {% endfor %}
             {% endif %}
         </div>
         <a href="https://mail.google.com/mail/u/0/?fs=1&to={{ person.gmail }}&su=SUBJECT&body=BODY&&tf=cm"
