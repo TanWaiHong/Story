@@ -35,7 +35,7 @@ nav {
 }
 
 .logo {
-    width: 160px;
+    width: 100px;
     margin-right: 45px;
 }
 
@@ -51,7 +51,7 @@ nav {
 
 .nav-right ul li img {
     width: 28px;
-    margin: 0px;
+    margin: 0;
 }
 
 .nav-user-icon img {
@@ -275,7 +275,7 @@ nav {
 }
 
 .story1 {
-    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5)), url(../image/status-1.png);
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5)), url(../image/rps.png);
 }
 
 .story2 {

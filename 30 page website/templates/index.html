@@ -21,37 +21,39 @@
         {% else: %}
         <ul>
             <li>
-                <div class="nav-user-icon notification">
+                <div class="nav-user-icon">
                     <img alt="img" src="../static/image/notification.png" style="width: 35px"></div>
             </li>
         </ul>
         <div class="nav-user-icon online" onclick="settingsMenuToggle();">
-            <img alt="img" src="../static/image/profile-pic.png">
+            <img alt="img" src="{{pd[int(tui) - 1].img}}">
         </div>
         {% endif %}
     </div>
-
+    {% if tui != 'none' %}
     <div class="settings-menu">
         <div id="dark-btn">
             <span></span>
         </div>
         <div class="settings-menu-inner">
             <div class="user-profile">
-                <img alt="img" src="../static/image/profile-pic.png">
+                <img alt="img" src="{{ pd[int(tui) - 1].img }}">
                 <div>
-                    <p>John Nicholson</p>
+                    <p>{{pd[int(tui) - 1].name}}</p>
                     <a href="{{ url_for('user_profile', person_id=tui, the_id=tui) }}">See Your Profile</a>
                 </div>
             </div>
             <hr>
             <div class="settings-links">
                 <img alt="img" src="../static/image/feedback.png" class="settings-icon">
-                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-feedback&body=BODY&&tf=cm">Give Feedback</a>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-feedback&body=BODY&&tf=cm">Give
+                    Feedback</a>
             </div>
             <hr>
             <div class="settings-links">
                 <img alt="img" src="../static/image/help.png" class="settings-icon">
-                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-HELP&body=BODY&&tf=cm">Help & Support</a>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=tan040724101445@gmail.com&su=S2S2-HELP&body=BODY&&tf=cm">Help
+                    & Support</a>
             </div>
             <div class="settings-links">
                 <img alt="img" src="../static/image/logout.png" class="settings-icon">
@@ -59,6 +61,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </nav>
 
 <div class="container">
@@ -66,7 +69,7 @@
         <div class="shortcut-links">
             <p>富豪榜</p>
             {% for the_rich in rl: %}
-            <a href="{{ url_for('user_profile', the_id=the_rich.id) }}">
+            <a href="{{ url_for('user_profile', person_id=the_rich.id, the_id=tui) }}">
                 <img alt="img" src="../static/image/shortcut-{{rl.index(the_rich) + 1}}.png">
                 {{the_rich.name}}
                 <h6 style="padding: 0; margin-left:20px"> 积分为：{{the_rich.score}}</h6>
@@ -87,16 +90,16 @@
     <div class="main-content">
         <div class="story-gallery">
             <div class="story story1">
-                <a href="{{url_for('SomeFunction', num=1, the_id=tui)}}"><p>add score</p></a>
+                <a href="{{url_for('rps_home', the_id=tui)}}"><p>r! p! s!</p></a>
             </div>
             <div class="story story2">
-                <p>Alison</p>
+                <p>waiting</p>
             </div>
             <div class="story story3">
-                <p>Jackson</p>
+                <p>waiting</p>
             </div>
             <div class="story story4">
-                <p>Samona</p>
+                <p>waiting</p>
             </div>
             <div class="story story5">
                 <a href="{{url_for('home', the_id=tui)}}"><p>Movie Blogspot</p></a>
@@ -105,7 +108,7 @@
         {% if tui != "none": %}
         <div class="write-post-container">
             <div class="user-profile">
-                <img alt="img" src="../static/image/profile-pic.png">
+                <img alt="img" src="{{pd[int(tui) - 1].img  }}" class="kind-show-{{pd[int(tui)-1].kind}}">
                 <div>
                     <p>{{pd[int(tui)-1].name}}</p>
                 </div>
@@ -126,9 +129,9 @@
         <div class="post-container">
             <div class="post-row">
                 <div class="user-profile">
-                    <img alt="img" src="../static/image/member-3.png">
+                    <img alt="img" src="{{pd[int(post.name)-1].img}}" class="kind-show-{{pd[int(post.name)-1].kind}}">
                     <div>
-                        <p>{{post.name}}</p>
+                        <p>{{pd[int(post.name)-1].name}}</p>
                         <span>{{post.time}}</span>
                     </div>
                 </div>
@@ -142,11 +145,11 @@
                 <div class="activity-icons">
                     <div>
                         <img alt="img" src="../static/image/like-blue.png">
-                        120
+                        {{ post.liked }}
                     </div>
                 </div>
                 {% if tui != 'none' %}
-                {% if post.name == pd[int(tui)-1].name: %}
+                {% if post.name == tui: %}
                 <div class="post-profile-icon">
                     <a href="{{url_for('SomeFunction', post_id=post.id, the_id=tui, num=3)}}">Delete</a>
                 </div>
@@ -172,7 +175,7 @@
                     <i class="fa fa-map-marker"></i>
                     固定获得分数
                 </p>
-                <a href="#">More Info</a>
+                <a href="{{ url_for('SomeFunction', num=1, the_id=tui) }}">More Info</a>
             </div>
         </div>
 

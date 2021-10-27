@@ -59,12 +59,35 @@ class Blog(db.Model):
         return f'<Blog {self.id}>'
 
 
+class Game1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bet = db.Column(db.Integer, nullable=False)
+    choice = db.Column(db.Integer, nullable=False)
+    review = db.Column(db.String(250), nullable=True)
+    img_url = db.Column(db.String(250), nullable=False)
+
+    def __repr__(self):
+        return f'<Game1 {self.id}>'
+
+
 db.create_all()
 
 
 class RateMovieForm(FlaskForm):
     rating = StringField("Your Rating Out of 10 e.g. 7.5")
     review = StringField("Your Review")
+    submit = SubmitField("Done")
+
+
+class RpsEditForm(FlaskForm):
+    rating = StringField("Your bet score (should be lower than your current score)")
+    review = StringField("Your Review")
+    choice = StringField("Choose rock paper or scissors(should be 0, 5 or 2)")
+    submit = SubmitField("Done")
+
+
+class RpsBetForm(FlaskForm):
+    choice = StringField("Choose rock paper or scissors(should be 0, 5 or 2)")
     submit = SubmitField("Done")
 
 
@@ -95,23 +118,26 @@ def SomeFunction():
     num = request.args.get("num")
     the_id = request.args.get("the_id")
     if num == "1":
-        update_person = Person.query.get(the_id)
-        update_person.score += 100
+        person = Person.query.get(the_id)
+        person.score += 100
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
     elif num == "2":
         today = datetime.today() + timedelta(hours=8)
         person = Person.query.get(the_id)
         new_blog = Blog(
-            name=person.name,
+            name=person.id,
             time=today.strftime("%b %d %Y, %X"),
             post=request.form['user-post'],
-            liked=f"{list()}"
+            liked="0"
         )
+        person.post += 1
         db.session.add(new_blog)
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
     elif num == "3":
+        person = Person.query.get(the_id)
+        person.post -= 1
         post_id = request.args.get("post_id")
         blog = Blog.query.get(post_id)
         db.session.delete(blog)
@@ -122,6 +148,8 @@ def SomeFunction():
         update_person.intro = request.form['user-post']
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
+    elif num == '5':
+        pass
 
 
 @app.route('/')
@@ -173,7 +201,7 @@ def user_login():
         the_password = request.form['input-password']
         try:
             real_password = Person.query.get(the_id).password
-        except TypeError:
+        except AttributeError:
             return render_template("login.html", state="wrong")
         else:
             if real_password == "waiting":
@@ -193,6 +221,117 @@ def set_intro():
     the_id = request.args.get('the_id')
     person = Person.query.get(the_id)
     return render_template("set.html", person=person)
+
+
+# rock paper scissors
+
+@app.route('/r-p-s/')
+def rps_home():
+    the_id = request.args.get('the_id')
+    all_deal = Game1.query.order_by(Game1.bet).all()
+    did_the_id_beted = Game1.query.get(the_id)
+    if did_the_id_beted is None:
+        no_bet = True
+    else:
+        no_bet = False
+    return render_template("rps-index.html", the_id=the_id, ad=all_deal, int=int, no_bet=no_bet)
+
+
+@app.route("/rps-edit/", methods=["GET", "POST"])
+def rps_edit():
+    the_id = request.args.get('the_id')
+    person = Person.query.get(the_id)
+    form = RpsEditForm()
+    deal_id = request.args.get("id")
+    deal = Game1.query.get(deal_id)
+    if form.validate_on_submit():
+        if (form.choice.data == "0" or form.choice.data == "2" or form.choice.data == "5") \
+                and 0 < int(form.rating.data) <= person.score:
+            deal.bet = int(form.rating.data)
+            deal.review = f'"{form.review.data}" by {person.name}'
+            deal.choice = int(form.choice.data)
+            db.session.commit()
+            return redirect(url_for('rps_home', the_id=the_id))
+        else:
+            return render_template("rps-rate.html", deal=deal, form=form, the_id=the_id, person=person)
+    return render_template("rps-rate.html", deal=deal, form=form, the_id=the_id, person=person)
+
+
+@app.route("/rps-delete/")
+def delete_rps():
+    the_id = request.args.get('the_id')
+    deal_id = request.args.get("id")
+    deal = Game1.query.get(deal_id)
+    db.session.delete(deal)
+    db.session.commit()
+    return redirect(url_for("rps_home", the_id=the_id))
+
+
+@app.route("/rps-new/", methods=["GET", "POST"])
+def new_rps():
+    the_id = request.args.get('the_id')
+    person = Person.query.get(the_id)
+    form = RpsEditForm()
+    if form.validate_on_submit():
+        if (form.choice.data == "0" or form.choice.data == "2" or form.choice.data == "5") \
+                and 0 < int(form.rating.data) <= person.score:
+            new_deal = Game1(
+                id=person.id,
+                bet=int(form.rating.data),
+                choice=int(form.choice.data),
+                review=f'"{form.review.data}" by {person.name}',
+                img_url=person.img,
+            )
+            db.session.add(new_deal)
+            db.session.commit()
+            return redirect(url_for('rps_home', the_id=the_id))
+        else:
+            return render_template("rps-new.html", form=form, the_id=the_id, person=person)
+    return render_template("rps-new.html", form=form, the_id=the_id, person=person)
+
+
+@app.route("/rps-bet/", methods=["GET", "POST"])
+def rps_bet():
+    the_id = request.args.get('the_id')
+    person = Person.query.get(the_id)
+    deal_id = request.args.get("id")
+    deal = Game1.query.get(deal_id)
+    if person.score < deal.bet:
+        return redirect(url_for('rps_home', the_id=the_id))
+    form = RpsBetForm()
+    if form.validate_on_submit():
+        if form.choice.data == "0" or form.choice.data == "2" or form.choice.data == "5":
+            mc = int(form.choice.data)
+            return redirect(url_for('result_rps', the_id=the_id, mc=mc, id=deal.id))
+        else:
+            return render_template("rps-bet.html", deal=deal, form=form, the_id=the_id)
+    return render_template("rps-bet.html", deal=deal, form=form, the_id=the_id)
+
+
+@app.route("/rps-result/")
+def result_rps():
+    the_id = request.args.get('the_id')
+    deal_id = request.args.get("id")
+    deal = Game1.query.get(deal_id)
+    mc = int(request.args.get('mc'))
+    person = Person.query.get(the_id)
+    deal_person = Person.query.get(deal.id)
+    if mc == deal.choice:
+        db.session.delete(deal)
+        db.session.commit()
+        return render_template("rps-result.html", deal=deal, the_id=the_id, result=2)
+    elif mc == 0 and int(deal.choice) == 2 or mc == 2 and int(deal.choice) == 5 or mc == 5 and int(deal.choice) == 0:
+        person.score += deal.bet
+        deal_person.score -= deal.bet
+        db.session.delete(deal)
+        db.session.commit()
+        return render_template("rps-result.html", deal=deal, the_id=the_id, result=0)
+    else:
+        person.score -= deal.bet
+        deal_person.score += deal.bet
+        db.session.delete(deal)
+        db.session.commit()
+        return render_template("rps-result.html", deal=deal, the_id=the_id, result=1)
 
 
 # movies
@@ -278,4 +417,3 @@ def find_movie():
 
 if __name__ == "__main__":
     app.run(debug=True)
-

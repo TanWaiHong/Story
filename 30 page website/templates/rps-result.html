@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>rps result!</title>
+    <style>
+        body{
+            background-color: #5ed2e7;
+        }
+        h1{
+            font-size: 50px;
+            margin-top: 100px;
+            text-align: center;
+            color: #FFFFFF;
+        }
+        h3{
+            color: #FFFFFF;
+            text-align: center;
+        }
+        a{
+            color: #FFFFFF;
+            font-size: 25px;
+        }
+    </style>
+</head>
+<body>
+{% if result == 0:%}
+<h1>You win!!</h1>
+<h3>You got {{deal.bet}} score!</h3>
+{% elif result == 1:%}
+<h1>You lose ;w;</h1>
+<h3>You lose {{deal.bet}} score!</h3>
+{% elif result == 2:%}
+<h1>Draw</h1>
+{% endif %}
+<div style="text-align: center;"><a href="{{url_for('user_logged_in', the_id=the_id)}}">back to rps</a></div>
+</body>
+</html>
