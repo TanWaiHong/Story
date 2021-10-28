@@ -70,6 +70,11 @@ class Game1(db.Model):
         return f'<Game1 {self.id}>'
 
 
+class LastTime(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.String(250), nullable=True)
+
+
 db.create_all()
 
 
@@ -119,7 +124,9 @@ def SomeFunction():
     the_id = request.args.get("the_id")
     if num == "1":
         person = Person.query.get(the_id)
-        person.score += 100
+        person.score += 200
+        person.online = False
+        db.session.commit()
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
     elif num == "2":
@@ -149,7 +156,19 @@ def SomeFunction():
         db.session.commit()
         return redirect(url_for("user_logged_in", the_id=the_id))
     elif num == '5':
-        pass
+        person = Person.query.get(the_id)
+        if person.score >= 500:
+            if person.kind < 7:
+                person.kind += 1
+            person.score -= 500
+            db.session.commit()
+        return redirect(url_for("user_logged_in", the_id=the_id))
+    elif num == '6':
+        post_id = request.args.get("post_id")
+        blog = Blog.query.get(post_id)
+        blog.liked = f"{int(blog.liked) + 1}"
+        db.session.commit()
+        return redirect(url_for("user_logged_in", the_id=the_id))
 
 
 @app.route('/')
@@ -159,6 +178,11 @@ def user_welcome():
 
 @app.route('/logged-in/')
 def user_logged_in():
+    if LastTime.query.get(1).time != f'{datetime.today().day}':
+        LastTime.query.get(1).time = f'{datetime.today().day}'
+        for person_ in Person.query.all():
+            person_.online = True
+        db.session.commit()
     the_id = request.args.get('the_id')
     rich_list = find_the_special("rich")
     poor_list = find_the_special("poor")
@@ -282,6 +306,15 @@ def new_rps():
                 review=f'"{form.review.data}" by {person.name}',
                 img_url=person.img,
             )
+            today = datetime.today() + timedelta(hours=8)
+            new_blog = Blog(
+                name=person.id,
+                time=today.strftime("%b %d %Y, %X"),
+                liked="0",
+                post=f"I create {new_deal.bet} score to bet.\n{form.review.data}",
+            )
+            person.post += 1
+            db.session.add(new_blog)
             db.session.add(new_deal)
             db.session.commit()
             return redirect(url_for('rps_home', the_id=the_id))
@@ -316,19 +349,44 @@ def result_rps():
     mc = int(request.args.get('mc'))
     person = Person.query.get(the_id)
     deal_person = Person.query.get(deal.id)
+    today = datetime.today() + timedelta(hours=8)
     if mc == deal.choice:
+        new_blog = Blog(
+            name=person.id,
+            time=today.strftime("%b %d %Y, %X"),
+            post=f"I tied on a {deal.bet} score bet with {deal_person.name}.",
+            liked="0"
+        )
+        person.post += 1
+        db.session.add(new_blog)
         db.session.delete(deal)
         db.session.commit()
         return render_template("rps-result.html", deal=deal, the_id=the_id, result=2)
     elif mc == 0 and int(deal.choice) == 2 or mc == 2 and int(deal.choice) == 5 or mc == 5 and int(deal.choice) == 0:
         person.score += deal.bet
         deal_person.score -= deal.bet
+        new_blog = Blog(
+            name=person.id,
+            time=today.strftime("%b %d %Y, %X"),
+            post=f"I winning {deal.bet} score from {deal_person.name}!!",
+            liked="0"
+        )
+        person.post += 1
+        db.session.add(new_blog)
         db.session.delete(deal)
         db.session.commit()
         return render_template("rps-result.html", deal=deal, the_id=the_id, result=0)
     else:
         person.score -= deal.bet
         deal_person.score += deal.bet
+        new_blog = Blog(
+            name=person.id,
+            time=today.strftime("%b %d %Y, %X"),
+            liked="0",
+            post=f"I losing {deal.bet} score to {deal_person.name}...",
+        )
+        person.post += 1
+        db.session.add(new_blog)
         db.session.delete(deal)
         db.session.commit()
         return render_template("rps-result.html", deal=deal, the_id=the_id, result=1)

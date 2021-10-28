@@ -19,12 +19,6 @@
             </div>
         </a>
         {% else: %}
-        <ul>
-            <li>
-                <div class="nav-user-icon">
-                    <img alt="img" src="../static/image/notification.png" style="width: 35px"></div>
-            </li>
-        </ul>
         <div class="nav-user-icon online" onclick="settingsMenuToggle();">
             <img alt="img" src="{{pd[int(tui) - 1].img}}">
         </div>
@@ -93,7 +87,11 @@
                 <a href="{{url_for('rps_home', the_id=tui)}}"><p>r! p! s!</p></a>
             </div>
             <div class="story story2">
-                <p>waiting</p>
+                {%if tui == 'none':%}
+                <p>Login to Donate</p>
+                {%else:%}
+                <a href="{{url_for('SomeFunction', num=5, the_id=tui)}}"><p>Donate 500 score</p></a>
+                {%endif%}
             </div>
             <div class="story story3">
                 <p>waiting</p>
@@ -125,7 +123,7 @@
             </div>
         </div>
         {% endif %}
-        {% for post in bo[:-21:-1]: %}
+        {% for post in bo[::-1]: %}
         <div class="post-container">
             <div class="post-row">
                 <div class="user-profile">
@@ -143,10 +141,18 @@
             </p>
             <div class="post-row">
                 <div class="activity-icons">
+                    {%if tui == 'none':%}
                     <div>
                         <img alt="img" src="../static/image/like-blue.png">
                         {{ post.liked }}
                     </div>
+                    {%else:%}
+                    <div>
+                        <a href="{{url_for('SomeFunction', post_id=post.id, the_id=tui, num=6)}}">
+                            <img alt="img" src="../static/image/like-blue.png"></a>
+                        {{ post.liked }}
+                    </div>
+                    {%endif%}
                 </div>
                 {% if tui != 'none' %}
                 {% if post.name == tui: %}
@@ -158,7 +164,7 @@
             </div>
         </div>
         {% endfor %}
-        <button type="button" class="load-more-btn">Show All</button>
+
     </div>
     <div class="right-sidebar">
         <div class="sidebar-title">
@@ -169,14 +175,20 @@
                 <h3>{{dl[0]}}</h3>
                 <span>{{dl[1]}}</span>
             </div>
+            {% if tui != 'none':%}
             <div class="right-event">
-                <h4>每日领薪</h4>
+                <h4>每日领分</h4>
                 <p>
                     <i class="fa fa-map-marker"></i>
-                    固定获得分数
+                    每日登入获得200分
                 </p>
-                <a href="{{ url_for('SomeFunction', num=1, the_id=tui) }}">More Info</a>
+                {%if pd[int(tui)-1].online:%}
+                <a href="{{ url_for('SomeFunction', num=1, the_id=tui) }}">Receive award</a>
+                {%else:%}
+                Claimed
+                {%endif%}
             </div>
+            {%endif%}
         </div>
 
 
